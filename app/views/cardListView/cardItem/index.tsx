@@ -16,6 +16,7 @@ interface Props {
 
 export const CardItem: FC<Props> = memo(({ index = 1, isModalVisible, onPressItem, data, onPressDuplicateCard, onPressShareCard, onPressDeleteCard }: Props) => {
 	const styles = useMemo(() => getStyle(), []);
+	console.log('data', data)
 	const opacity: { value: number; } = useSharedValue(0);
 	const containerStyle = useAnimatedStyle(() => {
 		return { opacity: opacity.value };
@@ -58,7 +59,7 @@ export const CardItem: FC<Props> = memo(({ index = 1, isModalVisible, onPressIte
 				</Pressable>
 			</View>
 			{isModalVisible && menuItems.map(({ text, icon, onPress }) => (
-				<Pressable {...{ onPress }} style={(({ pressed }) => [styles.menuItemWrapper, { opacity: pressed ? 0.7 : 1 }])}>
+				<Pressable key={text} {...{ onPress }} style={(({ pressed }) => [styles.menuItemWrapper, { opacity: pressed ? 0.7 : 1 }])}>
 					<Text style={styles.menuTitle}>{text}</Text>
 					<Image source={icon} style={styles.icon} />
 				</Pressable>

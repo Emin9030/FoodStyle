@@ -1,8 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { FC, memo, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FC, memo, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Text, Image, Modal, Pressable, TextInput, View, Share } from 'react-native';
 import { GetAllCardsDocument, useAddNewCardMutation, useDeleteCardMutation, useDuplicateCardMutation, useShareCardMutation, useSignInMutation } from '../../generated';
-import { useKeyboardShown } from '../../services/useKeyboardShown';
 import LinearGradient from 'react-native-linear-gradient';
 import { BlurView } from '@react-native-community/blur';
 import { COLORS, IMAGES } from '../../config';
@@ -25,8 +24,6 @@ export const CardListView: FC<Props> = memo(({ }) => {
 	const [duplicateCard] = useDuplicateCardMutation({ refetchQueries: [{ query: GetAllCardsDocument }] });
 	const { loading, error, data } = useQuery(GetAllCardsDocument, { pollInterval: 100 });
 	const [addNewCard] = useAddNewCardMutation({ refetchQueries: [{ query: GetAllCardsDocument }] });
-	const { isKeyboardShow } = useKeyboardShown();
-	const flatListRef = useRef<FlatList>(null);
 
 	const onPressUserAuthorization = async ({ email, password }: { email: string; password: string; }): Promise<void> => {
 		await getUserSignIn({ variables: { email, password } });
@@ -45,14 +42,9 @@ export const CardListView: FC<Props> = memo(({ }) => {
 		await Share.share({ message: `${selectedItem.name}`, url: `https://cards.foodstyles.com/${result.data?.shareCard}`, });
 	};
 
-	const onScrollTo = () => {
-		flatListRef?.current?.scrollToIndex({ animated: true, index: data?.cards?.length - 1 });
-	};
-
 	const onPressAddNewCard = async () => {
 		setNewCardName('');
 		await addNewCard({ variables: { name: newCardName } });
-		onScrollTo();
 	};
 
 	const onPressDuplicateCard = async (id: string) => {
@@ -69,10 +61,6 @@ export const CardListView: FC<Props> = memo(({ }) => {
 		// Temporarily 
 		onPressUserAuthorization({ email: 'john@doe.com', password: 'p4SSW0rd' });
 	}, []);
-
-	useEffect(() => {
-		onScrollTo();
-	}, [isKeyboardShow]);
 
 	if (loading) return <ActivityIndicator />;
 	if (error) return <></>;
@@ -91,7 +79,7 @@ export const CardListView: FC<Props> = memo(({ }) => {
 				<View style={styles.modalContentWrapper}>
 					<CardItem data={{
 						id: selectedItem?.id,
-						name: selectedItem?.newCardName
+						name: selectedItem?.name
 					}} {...{ onPressItem, isModalVisible, onPressDeleteCard, onPressDuplicateCard, onPressShareCard }} />
 				</View>
 			</Modal>
@@ -99,7 +87,6 @@ export const CardListView: FC<Props> = memo(({ }) => {
 				<Image source={IMAGES.logo} style={styles.logo} />
 			</View>
 			<FlatList
-				ref={flatListRef}
 				showsVerticalScrollIndicator={false}
 				data={data.cards}
 				contentContainerStyle={{ paddingBottom: 20 }}
