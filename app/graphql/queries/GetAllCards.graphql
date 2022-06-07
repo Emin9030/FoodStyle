@@ -1,0 +1,7 @@
+query GetAllCards {
+  cards {
+    id
+    name
+    shareCode
+  }
+}

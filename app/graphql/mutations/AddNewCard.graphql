@@ -1,0 +1,7 @@
+mutation AddNewCard($name: NonEmptyString!) {
+  createCard(data: {name: $name, locationCuisineTypeIds: [], dishTypeIds: [], courseTypeIds: [], dietIds: [], excludedIngredientIds: [], locationTypeIds: []}) {
+    name
+    id
+    shareCode
+  }
+}

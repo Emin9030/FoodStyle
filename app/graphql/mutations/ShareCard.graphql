@@ -1,0 +1,3 @@
+mutation ShareCard($id: ID = "") {
+  shareCard(id: $id)
+}

@@ -1,0 +1,6 @@
+mutation DuplicateCard($id: ID = "") {
+  duplicateCard(id: $id) {
+    id
+    name
+  }
+}
